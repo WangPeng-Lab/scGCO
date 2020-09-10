@@ -202,7 +202,7 @@ print('GMM time(s): ', time.time()-t0)
 ```python
 
 t0= time.time()
-result_df= identify_spatial_genes_optimize_gmm(locs_new, data_norm_new, 
+result_df= identify_spatial_genes(locs_new, data_norm_new, 
                                                cellGraph_new ,gmmDict)
 print('Running time: {} seconds'.format(time.time()-t0))
 
