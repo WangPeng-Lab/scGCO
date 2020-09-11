@@ -129,10 +129,7 @@ plt.title('CellGraph')
 
 ![png](README_file/output_9_1.png)
 
-
-<font size=3> **Recommended fill spots for Mouse olfactor bulb and Breast cancer:** </font>  
-    <font size=2> &emsp; The undigraph connected all adjoining circular ‘spots’with a diameter of 100 µm  and finally formed a grid, where at each spot the mRNA abundance of 10–100 cells. So we suggest filling missed or filtered sopts for getting more complete graph.   </font>  
-    <font size=2> &emsp; *The user chooses the step for other datasets.*</font> 
+<br><font size=3> Both Mouse olfactor bulb and Breast cancer data sets used in the analysis have missing spots, creating holes in the grid. We recomment the users to fill the missing spot, and impute the missing values using <mark><font color=red> **AddPoints_XY_and_update_data**</font></mark> function, for more accurate analysis results. <font>  
 
 
 ```python
@@ -214,7 +211,9 @@ print('Running time: {} seconds'.format(time.time()-t0))
     Running time: 112.93512773513794 seconds
     
 
-<br><font size=2>We perform to write and save scGCO output results with <mark><font color=red>**write_result_to_csv**</font></mark> functions for cross-platform.<br><br> Meanwhile, When reread these results we should use <mark><font color=red>**read_result_to_dataframe**</font></mark> functions. <font>
+<br><font size=3>The results of scGCO can be saved to .csv files using  <mark><font color=red>**write_result_to_csv**</font></mark> function.
+
+And the saved .csv file can be accessed using <mark><font color=red>**read_result_to_dataframe**</font></mark> function.  <font>
 
 
 ```python
