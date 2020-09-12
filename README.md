@@ -388,11 +388,6 @@ p, node, com = compute_p_CSR(locs_new, newLabels, gmm, count, cellGraph_new)
 # Visualize graph cut results
 plot_voronoi_boundary(geneID, locs_new, count,  newLabels, min(p)) 
 
-# save the graph cut results to pdf
-pdf_voronoi_boundary(geneID, locs_new, count, newLabels, min(p), 
-                   fileName=None, #  '../../results//{}.pdf'.format(geneID),
-                    point_size=0)
-
 ```
 
     raw data dim: (262, 16218)
@@ -400,13 +395,6 @@ pdf_voronoi_boundary(geneID, locs_new, count, newLabels, min(p),
 
 
 ![png](README_file/output_35_1.png)
-
-
-    ERROR! Please supply a file name.
-    
-
-
-![png](README_file/output_35_3.png)
 
 
 ## Reproducibility
@@ -445,8 +433,6 @@ pdf_voronoi_boundary(geneID, locs_new, count, newLabels, min(p),
 |                   ├── SPARK_performance_run.R # the code is for testing scGCO running speed and occupied CPU memory with simulate data
 |                   ├── spatialDE_simulate_script.ipynb # the code is for testing spatialDE running speed and occupied CPU memory with simulate data
 │   ├── README.md
-│   ├── run.sh #  Code run to pre-compile the notebooks in this capsule to verify reproducibility.
-│   ├── Table_Of_Contents.ipynb # Start here in an interactive session. Includes hyperlinks to individual analysis notebooks
 |
 ├── data
 |   ├── HighVariableGenes
