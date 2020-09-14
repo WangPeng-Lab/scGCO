@@ -37,7 +37,7 @@ The following codes demonstrate the typical data analysis flow of scGCO.
 
 The tutorial has also been provided as a Jupyter Notebook in the **Tutorial** directory ([scGCO_tutorial.ipynb](/code/Tutorial/scGCO_tutorial.ipynb))
 
-The entire process should only take 1-2 minutes on a typical desktop computer with 8 cores.
+The entire process should only take 2-3 minutes on a typical desktop computer with 8 cores.
 
 ### Input Format
 The required matrix format is the ST data format, a matrix of counts where spot coordinates are row names and the gene names are column names. This default matrix format (*.TSV* ) is split by tab.
