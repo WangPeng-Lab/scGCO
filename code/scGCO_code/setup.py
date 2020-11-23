@@ -13,3 +13,8 @@ setup(
         license='MIT'
 
 )
+
+## pip install numpy
+## pip install pygco
+## conda install -c conda-forge cython
+## pip uninstall shapely && conda install -c r shapely   

@@ -19,7 +19,7 @@ The primary implementation is as a Python 3 package, and can be installed from t
  pip install scgco
 ```
 
-**scGCO** has been tested on Ubuntu Linux (18.04.1), Mac OS X (10.14.1) and Windows(Windows 7 Professional).
+**scGCO** has been tested on Ubuntu Linux (18.04.1), Mac OS X (10.14.1) and Windows(Windows 7 Professional - Windows 10 Professional).
 
 ### License
 MIT Licence, see LICENSE file.
@@ -37,7 +37,7 @@ The following codes demonstrate the typical data analysis flow of scGCO.
 
 The tutorial has also been provided as a Jupyter Notebook in the **Tutorial** directory ([scGCO_tutorial.ipynb](/code/Tutorial/scGCO_tutorial.ipynb))
 
-The entire process should only take 1-2 minutes on a typical desktop computer with 8 cores.
+The entire process should only take 2-3 minutes on a typical desktop computer with 8 cores.
 
 ### Input Format
 The required matrix format is the ST data format, a matrix of counts where spot coordinates are row names and the gene names are column names. This default matrix format (*.TSV* ) is split by tab.
@@ -388,11 +388,6 @@ p, node, com = compute_p_CSR(locs_new, newLabels, gmm, count, cellGraph_new)
 # Visualize graph cut results
 plot_voronoi_boundary(geneID, locs_new, count,  newLabels, min(p)) 
 
-# save the graph cut results to pdf
-pdf_voronoi_boundary(geneID, locs_new, count, newLabels, min(p), 
-                   fileName=None, #  '../../results//{}.pdf'.format(geneID),
-                    point_size=0)
-
 ```
 
     raw data dim: (262, 16218)
@@ -400,13 +395,6 @@ pdf_voronoi_boundary(geneID, locs_new, count, newLabels, min(p),
 
 
 ![png](README_file/output_35_1.png)
-
-
-    ERROR! Please supply a file name.
-    
-
-
-![png](README_file/output_35_3.png)
 
 
 ## Reproducibility
@@ -419,34 +407,32 @@ pdf_voronoi_boundary(geneID, locs_new, count, newLabels, min(p),
 │   ├── scGCO_code
 |         ├── scGCO # the source code folder for running scGCO
 |   ├── analysis
-|   |        ├── FIG2_a_b_c_d.ipynb:this notebook will reproduce main figure2a_2b_2c_2d
-|   |        ├── FIG2_e_f.ipynb:this notebook will reproduce main figure2e_2f
+|   |        ├── FIG2_a_b_c_d.ipynb:this notebook will reproduce main Figure2a_2b_2c_2d
+|   |        ├── FIG2_e_f.ipynb:this notebook will reproduce main Figure2e_2f
 |   |        ├── Simulation
 |   |               ├── notebooks : this folder contains simulation scripts and runing scripts
 |   |               ├── processed_data : this folder contains sim_mob sample info, tissue mat and simulation counts
 |   |               ├── compare : this notebook will reproduce Suppl Figure6
-|   |                    └── gen_Supple_Fig1.ipynb : this notebook will reproduce Suppl Figure1
+|   |                    └── gen_Supple_Fig1.ipynb : this notebook will reproduce Supple Figure1
 |   |        ├── MouseOB
-|   |               ├── Supple_Fig3_tsne_Genes_cluster_MOB.ipynb : this notebook will reproduce Suppl Figure3
-|   |               ├── Supple_Fig4-markGenes-Rep9.ipynb : this notebook will reprodece Suppl Figure4
-|   |               ├── Supple_Fig8-Tissue_structure.ipynb : this notebook will reproduce Suppl Figure8
+|   |               ├── Supple_Fig3_tsne_Genes_cluster_MOB.ipynb : this notebook will reproduce Supple Figure3
+|   |               ├── Supple_Fig4-markGenes-Rep9.ipynb : this notebook will reprodece Supple Figure4
+|   |               ├── Supple_Fig8-Tissue_structure.ipynb : this notebook will reproduce Supple Figure8
 |   |                    └── ...
 |   |        ├── Breast_Cancer
-|   |               ├── Supple_Fig12-Breast cancer.ipynb : this notebook will reproduce Figure2_e_f and Suppl Figure12
+|   |               ├── Supple_Fig12-Breast cancer.ipynb : this notebook will reproduce Figure2e_2f and Suppl Figure12
 |   |        ├── MERFISH
-|   |               ├── Supple_Fig15-MERFISH.ipynb : this notebook will reprodece Suppl Figure15
+|   |               ├── Supple_Fig15-MERFISH.ipynb : this notebook will reprodece Supple Figure15
 │   ├── Computation-Performance
-|         ├── Fig2g_Compare_memory_simulation_data.ipynb # this notebook is for comparing occpuied memory of three three methods and shown in main fig2g
-|         ├── Fig2h_Compare_time_simulation_data.ipynb # this notebook is for comparing running speed of three three methods and shown in main fig2h
+|         ├── Fig2g_Compare_memory_simulation_data.ipynb # this notebook is for comparing occpuied memory of three three methods and shown in main Fig2g
+|         ├── Fig2h_Compare_time_simulation_data.ipynb # this notebook is for comparing running speed of three three methods and shown in main Fig2h
 |   |     ├── Simulate_script
 |                   ├── create_performance_bigdata_R.ipynb # the code is for millions simulate data
 |                   ├── scGCO_performance_run.ipynb # the code is for testing scGCO running speed and occupied CPU memory with simulate data
 
-|                   ├── SPARK_performance_run.R # the code is for testing scGCO running speed and occupied CPU memory with simulate data
+|                   ├── SPARK_performance_run.R # the code is for testing SPARK running speed and occupied CPU memory with simulate data
 |                   ├── spatialDE_simulate_script.ipynb # the code is for testing spatialDE running speed and occupied CPU memory with simulate data
 │   ├── README.md
-│   ├── run.sh #  Code run to pre-compile the notebooks in this capsule to verify reproducibility.
-│   ├── Table_Of_Contents.ipynb # Start here in an interactive session. Includes hyperlinks to individual analysis notebooks
 |
 ├── data
 |   ├── HighVariableGenes
@@ -491,6 +477,4 @@ This notebook generates Fig. 2g using precomputed data.
 ### Generate running time profiling plot (Fig. 2h)
 * [Compare_time_simulation_data.ipynb](/code/Simulation/Fig2h_Compare_time_simulation_data.ipynb):
 This notebook generates Fig. 2h using precomputed data.
-
-This script takes about 20 hours to finish on a typical 8 cores computer.
 
