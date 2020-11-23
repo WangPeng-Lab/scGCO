@@ -83,14 +83,18 @@ unary_scale_factor=100
 label_cost=10
 algorithm='expansion'
 ff = 'README_file/Rep'+str(j)+'_MOB_count_matrix-1.tsv'
-locs,data=read_spatial_expression(ff,sep='\t',num_exp_genes=0.01, num_exp_spots=0.05, min_expression=1)
+locs,data,_=read_spatial_expression(ff,sep='\t',num_exp_genes=0.01, num_exp_spots=0.05, min_expression=1)
 
 data_norm = normalize_count_cellranger(data)
 print('Rep{}_processing: {}'.format(j,data_norm.shape))
 ```
 
-    raw data dim: (262, 16218)
-    Rep11_processing: (259, 12522)
+raw data dim: (262, 16218)
+Number of expressed genes a spot must have to be kept (0.01% of total expressed genes) 3375
+Marked 3 spots
+Removing genes that are expressed in less than 3 spots with a count of at least 1
+Dropped 1559 genes
+Rep11_processing: (262, 14659)
     
 
 ## **Step 2:**  
@@ -129,44 +133,7 @@ plt.title('CellGraph')
 
 ![png](README_file/output_9_1.png)
 
-<br><font size=3> Both Mouse olfactor bulb and Breast cancer data sets used in the analysis have missing spots, creating holes in the grid. We recomment the users to fill the missing spot, and impute the missing values using <mark><font color=red> **AddPoints_XY_and_update_data**</font></mark> function, for more accurate analysis results. <font>  
 
-
-```python
-locs_new,data_norm_new,newPoints=AddPoints_XY_and_update_data(locs,data_norm,cellGraph,axis=1)
-print('Filled {} points'.format(len(newPoints)))
-print('After filled points: ', data_norm_new.shape)
-```
-
-    Filled 6 points
-    After filled points:  (265, 12522)
-    
-
-
-```python
-fig, ax= plt.subplots(1,1,figsize=(5,5)) #, dpi=300)
-ax.set_aspect('equal')
-
-exp_new = data_norm_new.iloc[:,0].values
-cellGraph_new = create_graph_with_weight(locs_new, exp_new)
-ax.scatter(locs_new[:,0], locs_new[:,1], s=1, color='black')
-for i in np.arange(cellGraph_new.shape[0]):
-    x = (locs_new[int(cellGraph_new[i,0]), 0], locs_new[int(cellGraph_new[i,1]), 0]) 
-    y = (locs_new[int(cellGraph_new[i,0]), 1], locs_new[int(cellGraph_new[i,1]), 1])     
-    ax.plot(x, y, color='black', linewidth=0.5)
-    
-plt.title('New CellGraph')
-```
-
-
-
-
-    Text(0.5, 1.0, 'New CellGraph')
-
-
-
-
-![png](README_file/output_12_1.png)
 
 
 ## **Step3:**
@@ -199,8 +166,8 @@ print('GMM time(s): ', time.time()-t0)
 ```python
 
 t0= time.time()
-result_df= identify_spatial_genes(locs_new, data_norm_new, 
-                                               cellGraph_new ,gmmDict)
+result_df= identify_spatial_genes(locs, data_norm, 
+                                               cellGraph,gmmDict)
 print('Running time: {} seconds'.format(time.time()-t0))
 
 ```
@@ -238,13 +205,13 @@ select genes demonstrating significant spatial variability</font>
 
 
 ```python
-fdr_cutoff=0.05
+fdr_cutoff=0.01
 fdr_df=result_df.sort_values('fdr').loc[result_df.fdr<fdr_cutoff,]
 
 print(fdr_df.shape)
 ```
 
-    (333, 269)
+    (481, 267)
     
 
 
@@ -355,7 +322,7 @@ smooth_factor=20
 
 ff = '../../data/Raw_data/MOB-breast_cancer/Rep11_MOB_count_matrix-1.tsv' 
 # read in spatial gene expression data
-locs, data = read_spatial_expression(ff,sep='\t')
+locs, data, _ = read_spatial_expression(ff,sep='\t')
 
 # normalize gene expression
 data_norm = normalize_count_cellranger(data)
@@ -366,31 +333,33 @@ exp =  data_norm.iloc[:,0]
 # create graph representation of spatial coordinates of cells
 cellGraph = create_graph_with_weight(locs, exp)
 
-## Fill spots
-locs_new,data_norm_new,newPoints=AddPoints_XY_and_update_data(locs,data_norm,cellGraph,axis=1)
-
-# recreate new cellGraph after filled sopts.
-exp_new =  data_norm_new.iloc[:,0]
-cellGraph_new = create_graph_with_weight(locs_new, exp_new)
-
         
 # GMM 
-count = data_norm_new.loc[:,geneID].values
+count = data_norm.loc[:,geneID].values
 gmm=perform_gmm(count)
 
 # do graph cut
 temp_factor=smooth_factor
-newLabels = cut_graph_general(cellGraph_new, count, gmm, unary_scale_factor, 
-                                           temp_factor, label_cost, algorithm)
+newLabels, label_pred = cut_graph_general(cellGraph, count, gmm, unary_scale_factor, 
+                                        temp_factor, label_cost, algorithm)
+    
 # calculate p values
-p, node, com = compute_p_CSR(locs_new, newLabels, gmm, count, cellGraph_new)
+p, node, com = compute_p_CSR(locs, newLabels, gmm, count, cellGraph)
 
 # Visualize graph cut results
-plot_voronoi_boundary(geneID, locs_new, count,  newLabels, min(p)) 
+plot_voronoi_boundary(geneID, locs, count,  newLabels, min(p)) 
 
+# save the graph cut results to pdf
+# pdf_voronoi_boundary(geneID, locs, count, newLabels, min(p), 
+#                    fileName=None, #  '../../results//{}.pdf'.format(geneID),
+#                     point_size=0)
 ```
 
-    raw data dim: (262, 16218)
+raw data dim: (262, 16218)
+Number of expressed genes a spot must have to be kept (0.01% of total expressed genes) 3375
+Marked 3 spots
+Removing genes that are expressed in less than 3 spots with a count of at least 1
+Dropped 1559 genes
     
 
 
