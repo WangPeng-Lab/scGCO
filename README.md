@@ -130,46 +130,6 @@ plt.title('CellGraph')
 ![png](README_file/output_9_1.png)
 
 
-<font size=3> **Recommended fill spots for Mouse olfactor bulb and Breast cancer:** </font>  
-    <font size=2> &emsp; The undigraph connected all adjoining circular ‘spots’with a diameter of 100 µm  and finally formed a grid, where at each spot the mRNA abundance of 10–100 cells. So we suggest filling missed or filtered sopts for getting more complete graph.   </font>  
-    <font size=2> &emsp; *The user chooses the step for other datasets.*</font> 
-
-
-```python
-locs_new,data_norm_new,newPoints=AddPoints_XY_and_update_data(locs,data_norm,cellGraph,axis=1)
-print('Filled {} points'.format(len(newPoints)))
-print('After filled points: ', data_norm_new.shape)
-```
-
-    Filled 6 points
-    After filled points:  (265, 12522)
-    
-
-
-```python
-fig, ax= plt.subplots(1,1,figsize=(5,5)) #, dpi=300)
-ax.set_aspect('equal')
-
-exp_new = data_norm_new.iloc[:,0].values
-cellGraph_new = create_graph_with_weight(locs_new, exp_new)
-ax.scatter(locs_new[:,0], locs_new[:,1], s=1, color='black')
-for i in np.arange(cellGraph_new.shape[0]):
-    x = (locs_new[int(cellGraph_new[i,0]), 0], locs_new[int(cellGraph_new[i,1]), 0]) 
-    y = (locs_new[int(cellGraph_new[i,0]), 1], locs_new[int(cellGraph_new[i,1]), 1])     
-    ax.plot(x, y, color='black', linewidth=0.5)
-    
-plt.title('New CellGraph')
-```
-
-
-
-
-    Text(0.5, 1.0, 'New CellGraph')
-
-
-
-
-![png](README_file/output_12_1.png)
 
 
 ## **Step3:**
@@ -178,7 +138,7 @@ plt.title('New CellGraph')
 
 ```python
 t0=time.time()
-gmmDict= multiGMM(data_norm_new)
+gmmDict= multiGMM(data_norm)
 print('GMM time(s): ', time.time()-t0)
 ```
 
@@ -202,8 +162,8 @@ print('GMM time(s): ', time.time()-t0)
 ```python
 
 t0= time.time()
-result_df= identify_spatial_genes(locs_new, data_norm_new, 
-                                               cellGraph_new ,gmmDict)
+result_df= identify_spatial_genes(locs, data_norm, 
+                                               cellGraph ,gmmDict)
 print('Running time: {} seconds'.format(time.time()-t0))
 
 ```
@@ -265,7 +225,7 @@ print(fdr_df.shape)
 
 ```python
 # visualize top genes
-visualize_spatial_genes(fdr_df.iloc[0:10,], locs_new, data_norm_new ,point_size=0.2)
+visualize_spatial_genes(fdr_df.iloc[0:10,], locs, data_norm,cellGraph ,point_size=0.2)
 
 ```
 
@@ -292,206 +252,6 @@ visualize_spatial_genes(fdr_df.iloc[0:10,], locs_new, data_norm_new ,point_size=
 
 ```python
 # save top genes to pdf
-multipage_pdf_visualize_spatial_genes(fdr_df.iloc[0:10,], locs_new, data_norm_new,point_size=0) #, 
+multipage_pdf_visualize_spatial_genes(fdr_df.iloc[0:10,], locs, data_norm,cellGraph,point_size=0) #, 
 #                                       fileName='../../results//top10_genes.pdf')
 ```
-
-## **Step 7:** 
-<br><font size=4> **Perform t-SNE and visualize the clustering of identified genes.**<font>
-
-
-```python
-marker_genes = ['Pcp4','Apod','Slc17a7','Glul']
-tsne_proj_df = spatial_pca_tsne_kmeans_cluster_gene(data_norm_new, 
-                                                    fdr_df.index,
-                                                    marker_genes, 
-                                                    perplexity = 30,
-                                                    fileName=None)
-# plot_tsne(tsne_proj_df.iloc[:,0:2].values,tsne_proj_df.iloc[:,2]) #,
-#           fileName='../../PDF_file/supple_figure/Fig2b.pdf')
-```
-
-
-![png](README_file/output_30_0.png)
-
-
-
-```python
-
-fig,ax = plt.subplots()
-
-zz=visualize_tsne_density(tsne_proj_df.iloc[:,0:2].values,title=title,bins=200,threshold=0.1,ax=ax,fig=fig)
-```
-
-
-![png](README_file/output_31_0.png)
-
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-## **Step 8:** 
-
-<br><font size=4>**Perform graph cuts for a single gene.**<font>
-
-
-```python
-# You can also analyze one gene of interest
-
-geneID='Apod' # Lets use Nrgn as an example
-unary_scale_factor = 100 # scale factor for unary energy, default value works well
-label_cost=10
-algorithm='expansion'
-# set smooth factor to 20 for example; 
-# use bigger smooth_factor to get less segments
-# use small smooth_factor to get more segments
-smooth_factor=20 
-
-ff = '../../data/Raw_data/MOB-breast_cancer/Rep11_MOB_count_matrix-1.tsv' 
-# read in spatial gene expression data
-locs, data = read_spatial_expression(ff,sep='\t')
-
-# normalize gene expression
-data_norm = normalize_count_cellranger(data)
-
-# select anyone gene's expression
-exp =  data_norm.iloc[:,0]
-
-# create graph representation of spatial coordinates of cells
-cellGraph = create_graph_with_weight(locs, exp)
-
-## Fill spots
-locs_new,data_norm_new,newPoints=AddPoints_XY_and_update_data(locs,data_norm,cellGraph,axis=1)
-
-# recreate new cellGraph after filled sopts.
-exp_new =  data_norm_new.iloc[:,0]
-cellGraph_new = create_graph_with_weight(locs_new, exp_new)
-
-        
-# GMM 
-count = data_norm_new.loc[:,geneID].values
-gmm=perform_gmm(count)
-
-# do graph cut
-temp_factor=smooth_factor
-newLabels = cut_graph_general(cellGraph_new, count, gmm, unary_scale_factor, 
-                                           temp_factor, label_cost, algorithm)
-# calculate p values
-p, node, com = compute_p_CSR(locs_new, newLabels, gmm, count, cellGraph_new)
-
-# Visualize graph cut results
-plot_voronoi_boundary(geneID, locs_new, count,  newLabels, min(p)) 
-
-# save the graph cut results to pdf
-pdf_voronoi_boundary(geneID, locs_new, count, newLabels, min(p), 
-                   fileName=None, #  '../../results//{}.pdf'.format(geneID),
-                    point_size=0)
-
-```
-
-    raw data dim: (262, 16218)
-    
-
-
-![png](README_file/output_35_1.png)
-
-
-    ERROR! Please supply a file name.
-    
-
-
-![png](README_file/output_35_3.png)
-
-
-## Reproducibility
-
-### The container file system
-
-```
-/ [root]
-├── code
-│   ├── scGCO_code
-|         ├── scGCO # the source code folder for running scGCO
-|   ├── analysis
-|   |        ├── FIG2_a_b_c_d.ipynb:this notebook will reproduce main figure2a_2b_2c_2d
-|   |        ├── FIG2_e_f.ipynb:this notebook will reproduce main figure2e_2f
-|   |        ├── Simulation
-|   |               ├── notebooks : this folder contains simulation scripts and runing scripts
-|   |               ├── processed_data : this folder contains sim_mob sample info, tissue mat and simulation counts
-|   |               ├── compare : this notebook will reproduce Suppl Figure6
-|   |                    └── gen_Supple_Fig1.ipynb : this notebook will reproduce Suppl Figure1
-|   |        ├── MouseOB
-|   |               ├── Supple_Fig3_tsne_Genes_cluster_MOB.ipynb : this notebook will reproduce Suppl Figure3
-|   |               ├── Supple_Fig4-markGenes-Rep9.ipynb : this notebook will reprodece Suppl Figure4
-|   |               ├── Supple_Fig8-Tissue_structure.ipynb : this notebook will reproduce Suppl Figure8
-|   |                    └── ...
-|   |        ├── Breast_Cancer
-|   |               ├── Supple_Fig12-Breast cancer.ipynb : this notebook will reproduce Figure2_e_f and Suppl Figure12
-|   |        ├── MERFISH
-|   |               ├── Supple_Fig15-MERFISH.ipynb : this notebook will reprodece Suppl Figure15
-│   ├── Computation-Performance
-|         ├── Fig2g_Compare_memory_simulation_data.ipynb # this notebook is for comparing occpuied memory of three three methods and shown in main fig2g
-|         ├── Fig2h_Compare_time_simulation_data.ipynb # this notebook is for comparing running speed of three three methods and shown in main fig2h
-|   |     ├── Simulate_script
-|                   ├── create_performance_bigdata_R.ipynb # the code is for millions simulate data
-|                   ├── scGCO_performance_run.ipynb # the code is for testing scGCO running speed and occupied CPU memory with simulate data
-
-|                   ├── SPARK_performance_run.R # the code is for testing scGCO running speed and occupied CPU memory with simulate data
-|                   ├── spatialDE_simulate_script.ipynb # the code is for testing spatialDE running speed and occupied CPU memory with simulate data
-│   ├── README.md
-│   ├── run.sh #  Code run to pre-compile the notebooks in this capsule to verify reproducibility.
-│   ├── Table_Of_Contents.ipynb # Start here in an interactive session. Includes hyperlinks to individual analysis notebooks
-|
-├── data
-|   ├── HighVariableGenes
-|           ├── [Rep11_MOB seruat results  Tepe_MOB_hvg]
-|   ├── MOB_DESeq2_results
-|           ├── [Rep11 clustering 5 Layers and DESeq2 results]
-|   ├── Performance_BigData
-|           ├── [1M_cells_100genes_counts]
-|   ├── HighVariableGenes
-|           ├── [All datasets seruat results]
-|   ├── Raw_data
-|           ├── [All datasets counts data and HE image]
-└── results
-|    ├── Figure 
-|    |        ├── Figure2.pdf # Figures that were output by execution of the notebook
-|    |        ├── Suppl_Fig2.pdf
-|    |        └── ...
-|    ├── MouseOB # Notebooks that have been pre-compiled with nbconvert
-|    ├── BreastCancer
-|    └── ...
-└── Temp_files
-|    |        ├── Rep11_scGCO_tsne_proj_df # DataFrame that were used in execution of the notebook
-|    |        ├── data_norm_new 
-|    |               └── ...
-|    |        └── tissue_mat
-|    |               └── ...
-
-```
-
-Several Jupyter Notebooks are provided in the **analysis** directory to reproduce figures of the paper. 
-
-
-### Computation Performance with small and large data sets
-
-Several Jupyter Notebooks are provided in the **Computation-Performance**  directory to reproduce the running time simulation results reported in the main text.
-
-
-### Generate memroy profiling plot (Fig. 2g)
-* [Compare_memory_simulation_data.ipynb](/code/Simulation/Fig2g_Compare_memory_simulation_data.ipynb):
-This notebook generates Fig. 2g using precomputed data.
-
-### Generate running time profiling plot (Fig. 2h)
-* [Compare_time_simulation_data.ipynb](/code/Simulation/Fig2h_Compare_time_simulation_data.ipynb):
-This notebook generates Fig. 2h using precomputed data.
-
-This script takes about 20 hours to finish on a typical 8 cores computer.
-
