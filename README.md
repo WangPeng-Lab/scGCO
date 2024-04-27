@@ -85,7 +85,7 @@ unary_scale_factor=100
 label_cost=10
 algorithm='expansion'
 ff = 'README_file/Rep'+str(j)+'_MOB_count_matrix-1.tsv'
-locs,data=read_spatial_expression(ff,sep='\t',num_exp_genes=0.01, num_exp_spots=0.05, min_expression=1)
+locs,data, noiseInd=read_spatial_expression(ff,sep='\t',num_exp_genes=0.01, num_exp_spots=0.05, min_expression=1)
 
 data_norm = normalize_count_cellranger(data)
 print('Rep{}_processing: {}'.format(j,data_norm.shape))
