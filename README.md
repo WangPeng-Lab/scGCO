@@ -16,7 +16,7 @@ This repository contains source codes of scGCO, and tutorials on running the pro
 The primary implementation is as a Python 3 package, and can be installed from the command line by
 
 ```python
- git clone https://github.com/fengwanwan/scGCO.git
+git clone https://github.com/fengwanwan/scGCO.git
 cd scGCO
 pip install -e .
 ```
