@@ -29,7 +29,7 @@ MIT Licence, see LICENSE file.
 See AUTHORS file.
 
 ### Contact
-For bugs, feedback or help please contact Peng Wang <wangpeng@picb.ac.cn>.
+For bugs, feedback or help please contact Wanwan Feng <fengwanwan2023@gmail.com>  [scGCO](https://github.com/fengwanwan/scGCO).
 
 ## Example usage of scGCO
 
