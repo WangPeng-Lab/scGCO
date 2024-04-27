@@ -35,7 +35,7 @@ For bugs, feedback or help please contact Wanwan Feng <fengwanwan2023@gmail.com>
 
 The following codes demonstrate the typical data analysis flow of scGCO.
 
-The tutorial has also been provided as a Jupyter Notebook in the **Tutorial** directory ([scGCO_tutorial.ipynb](/code/Tutorial/scGCO_tutorial.ipynb))
+The tutorial has also been provided as a Jupyter Notebook in the **Tutorial** directory ([scGCO_starmap.ipynb](/notebooks/scGCO_starmap.ipynb))
 
 The entire process should only take 1-2 minutes on a typical desktop computer with 8 cores.
 
